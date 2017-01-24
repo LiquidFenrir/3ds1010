@@ -1,0 +1,11 @@
+*.db
+*.ini
+*.3dsx
+*.cia
+*.smdh
+*.bnr
+*.icn
+*.elf
+*.bat
+build/*
+out/*
