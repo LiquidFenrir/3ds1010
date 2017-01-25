@@ -1,6 +1,8 @@
 #include "draw.h"
 #include "pieces.h"
 
+u8 grid[10][10] = {0};
+
 int main()
 {
 	gfxInitDefault();
@@ -14,7 +16,6 @@ int main()
 	consoleSetWindow(&gridWindow, 1, 1, 10, 10);
 	consoleSetWindow(&inventoryWindow, 12, 1, 20, 20);
 	
-	u8 grid[10][10] = {0};
 	u8 inventory[3] = {0};
 	u8 selected_tile = 0;
 	u8 selected_piece = 0;
@@ -28,7 +29,7 @@ int main()
 			getPieces(inventory);
 		
 		consoleSelect(&gridWindow);
-		drawGrid(grid, selected_tile);
+		drawGrid(selected_tile);
 		
 		consoleSelect(&inventoryWindow);
 		drawInventory(inventory, selected_piece);

@@ -13,7 +13,7 @@ void drawInventory(u8 pieces[3], u8 selected_piece)
 	}
 }
 
-void drawGrid(u8 grid[][10], u8 selected_tile)
+void drawGrid(u8 selected_tile)
 {
 	for (u8 i = 0; i < 10; i++) {
 		for (u8 j = 0; j < 10; j++) {

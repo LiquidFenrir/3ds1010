@@ -5,3 +5,5 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+
+extern u8 grid[10][10];
