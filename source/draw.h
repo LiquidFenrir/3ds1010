@@ -1,4 +1,4 @@
 #include "common.h"
 
-void drawInventory(u8 inventory[3], u8 selected_piece);
-void drawGrid(u8 selected_tile);
+void setupScreens();
+void drawInterface(u8 selected_tile, u8 inventory[3], u8 selected_piece, u32 score, u8 change);

@@ -8,40 +8,26 @@ u8 grid[10][10] = {0};
 int main()
 {
 	gfxInitDefault();
+	setupScreens();
 	
-	PrintConsole debugWindow, gridWindow, inventoryWindow;
-	
-	consoleInit(GFX_BOTTOM, &debugWindow);
-	consoleInit(GFX_TOP, &gridWindow);
-	consoleInit(GFX_TOP, &inventoryWindow);
-	
-	consoleSetWindow(&gridWindow, 10, 8, 10, 10);
-	consoleSetWindow(&inventoryWindow, 32, 6, 6, 18);
-	
-	consoleSelect(&debugWindow);
 	generatePiecesTypes();
 	
 	u8 inventory[3] = {0};
 	u8 selected_tile = 0;
 	u8 selected_piece = 0;
 	u32 score = 0;
+	u8 change = 0;
 	
 	getPieces(inventory);
-	
+		
 	while (aptMainLoop())
 	{
-		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0) //refill inventory when all pieces are placed
+		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0)//refill inventory when all pieces are placed
 			getPieces(inventory);
 		
-		consoleSelect(&gridWindow);
-		consoleClear();
-		printf("score: %lu", score);
-		drawGrid(selected_tile);
-		
-		consoleSelect(&inventoryWindow);
-		drawInventory(inventory, selected_piece);
-		
-		consoleSelect(&debugWindow);
+		drawInterface(selected_tile, inventory, selected_piece, score, change);
+		if (change == 1)
+			change = 0;
 		
 		hidScanInput();
 		
@@ -56,6 +42,7 @@ int main()
 				score += tempscore;
 				score += checkGrid();
 				inventory[selected_piece] = 0;
+				change = 1;
 			}
 		}
 		//navigate through the grid
@@ -99,6 +86,7 @@ int main()
 			selected_piece = 0;
 			selected_tile = 0;
 			getPieces(inventory);
+			change = 1;
 		}
 		
 		gfxFlushBuffers();
