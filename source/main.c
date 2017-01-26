@@ -1,6 +1,7 @@
 #include "draw.h"
 #include "pieces.h"
 
+piece piecesType[20] = {0}; //piece 0 is reserved for blank
 u8 grid[10][10] = {0};
 
 int main()
@@ -13,19 +14,21 @@ int main()
 	consoleInit(GFX_TOP, &gridWindow);
 	consoleInit(GFX_TOP, &inventoryWindow);
 	
-	consoleSetWindow(&gridWindow, 1, 1, 10, 10);
-	consoleSetWindow(&inventoryWindow, 12, 1, 20, 20);
+	consoleSetWindow(&gridWindow, 10, 8, 10, 10);
+	consoleSetWindow(&inventoryWindow, 32, 6, 6, 18);
+	
+	consoleSelect(&debugWindow);
+	generatePiecesTypes();
 	
 	u8 inventory[3] = {0};
 	u8 selected_tile = 0;
 	u8 selected_piece = 0;
 	
-	consoleSelect(&debugWindow);
 	getPieces(inventory);
 	
 	while (aptMainLoop())
 	{
-		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0) //fill inventory when all pieces are placed
+		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0) //refill inventory when all pieces are placed
 			getPieces(inventory);
 		
 		consoleSelect(&gridWindow);
