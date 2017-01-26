@@ -6,7 +6,7 @@ void drawPiece(piece currentPiece)
 	for (int i = 0; i < currentPiece.width; i++) {
 		for (int j = 0; j < currentPiece.height; j++) {
 			u8 curval = GETBIT(currentPiece.blocks, curbit);
-			printf("%u", curval);
+			printf("%s", (curval == 0) ? " " : "1");
 			curbit++;
 		}
 		printf("\n");
