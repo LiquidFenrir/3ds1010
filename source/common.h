@@ -9,6 +9,7 @@
 #include <math.h>
 
 #define GETBIT(var, n) ((var >> n) & 1)
+#define PIECES_AMOUNT 21
 
 typedef struct {
 	u8 height;
@@ -20,5 +21,5 @@ typedef struct {
 	u32 blocks;
 } piece;
 
-extern piece piecesType[20];
+extern piece piecesType[PIECES_AMOUNT];
 extern u8 grid[10][10];

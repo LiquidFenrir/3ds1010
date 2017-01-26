@@ -2,7 +2,7 @@
 #include "pieces.h"
 #include "grid.h"
 
-piece piecesType[20] = {0}; //piece 0 is reserved for blank
+piece piecesType[PIECES_AMOUNT] = {0}; //piece 0 is reserved for blank
 u8 grid[10][10] = {0};
 
 int main()
