@@ -1,5 +1,6 @@
 #include "draw.h"
 #include "pieces.h"
+#include "grid.h"
 
 piece piecesType[20] = {0}; //piece 0 is reserved for blank
 u8 grid[10][10] = {0};
@@ -23,6 +24,7 @@ int main()
 	u8 inventory[3] = {0};
 	u8 selected_tile = 0;
 	u8 selected_piece = 0;
+	u32 score = 0;
 	
 	getPieces(inventory);
 	
@@ -32,6 +34,8 @@ int main()
 			getPieces(inventory);
 		
 		consoleSelect(&gridWindow);
+		consoleClear();
+		printf("score: %lu", score);
 		drawGrid(selected_tile);
 		
 		consoleSelect(&inventoryWindow);
@@ -45,13 +49,13 @@ int main()
 		if (hidKeysDown() & KEY_START) {
 			break;
 		}
-		//place the selected piece
-		//do stuff with the selected tile
+		//place the selected piece on the selected tile (starting from top left corner)
 		else if (hidKeysDown() & KEY_A) {
-			if (inventory[selected_piece] != 0) {
-				grid[selected_tile/10][selected_tile%10] = inventory[selected_piece];
+			u8 tempscore = placePiece(selected_tile, piecesType[inventory[selected_piece]]);
+			if (tempscore != 0) {
+				score += tempscore;
+				score += checkGrid();
 				inventory[selected_piece] = 0;
-			// placePiece(grid, selected_tile, pieces[selected_piece]);
 			}
 		}
 		//navigate through the grid
