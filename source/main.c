@@ -92,6 +92,14 @@ int main()
 			if (selected_piece != 2)
 				selected_piece++;
 		}
+		//reset
+		else if (hidKeysDown() & KEY_Y) {
+			memset(&grid, 0, 100);
+			score = 0;
+			selected_piece = 0;
+			selected_tile = 0;
+			getPieces(inventory);
+		}
 		
 		gfxFlushBuffers();
 		gfxSwapBuffers();
