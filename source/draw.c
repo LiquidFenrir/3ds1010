@@ -3,8 +3,8 @@
 void drawPiece(piece currentPiece)
 {
 	u8 curbit = 0;
-	for (int i = 0; i < currentPiece.height; i++) {
-		for (int j = 0; j < currentPiece.width; j++) {
+	for (int i = 0; i < currentPiece.width; i++) {
+		for (int j = 0; j < currentPiece.height; j++) {
 			u8 curval = GETBIT(currentPiece.blocks, curbit);
 			printf("%u", curval);
 			curbit++;
