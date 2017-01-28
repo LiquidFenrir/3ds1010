@@ -7,8 +7,9 @@ void setupScreens()
 	consoleInit(GFX_BOTTOM, &debugWindow);
 	consoleInit(GFX_TOP, &gridWindow);
 	consoleInit(GFX_TOP, &inventoryWindow);
-	consoleSetWindow(&gridWindow, 10, 8, 15, 15);
-	consoleSetWindow(&inventoryWindow, 32, 6, 6, 18);	
+	consoleSetWindow(&gridWindow, 10, 7, 15, 15);
+	consoleSetWindow(&inventoryWindow, 32, 6, 6, 18);
+	consoleSelect(&debugWindow);
 }
 
 void drawPiece(piece currentPiece)
@@ -42,7 +43,7 @@ void drawGrid(u8 selected_tile)
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
 			u8 curnum = grid[i][j];
-			printf("\x1b[%u;%uH", i+2, j); //set cursor position for each tile
+			printf("\x1b[%u;%uH", i+3, j); //set cursor position for each tile
 			
 			if ((i*10 +j) == selected_tile)
 				printf("\x1b[47;30m"); //selected tile has white background
@@ -53,18 +54,20 @@ void drawGrid(u8 selected_tile)
 	}
 }
 
-void drawInterface(u8 selected_tile, u8 inventory[3], u8 selected_piece, u32 score, u8 change)
+void drawInterface(u8 selected_tile, u8 inventory[3], u8 selected_piece, u32 score, u32 highscore, u8 * change)
 {
 	consoleSelect(&gridWindow);
-	if (change != 0)
+	if (*change != 0)
 		consoleClear();
-	printf("\x1b[0;0Hscore: %lu", score);
+	printf("\x1b[0;0Hhighscore: %lu", highscore);
+	printf("\x1b[1;4Hscore: %lu", score);
 	drawGrid(selected_tile);
 	
 	consoleSelect(&inventoryWindow);
-	if (change != 0)
+	if (*change != 0)
 		consoleClear();
 	drawInventory(inventory, selected_piece);
 	
 	consoleSelect(&debugWindow);
+	*change = 0;
 }

@@ -1,6 +1,7 @@
 #include "draw.h"
 #include "pieces.h"
 #include "grid.h"
+#include "save.h"
 
 piece piecesType[PIECES_AMOUNT] = {0}; //piece 0 is reserved for blank
 u8 grid[10][10] = {0};
@@ -16,26 +17,27 @@ int main()
 	u8 selected_tile = 0;
 	u8 selected_piece = 0;
 	u32 score = 0;
+	u32 highscore = 0;
 	u8 change = 0;
 	
 	getPieces(inventory);
+	readSave(inventory, &score, &highscore);
 		
 	while (aptMainLoop())
 	{
-		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0)//refill inventory when all pieces are placed
+		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0) //refill inventory when all pieces are placed
 			getPieces(inventory);
 		
-		drawInterface(selected_tile, inventory, selected_piece, score, change);
-		if (change == 1)
-			change = 0;
+		drawInterface(selected_tile, inventory, selected_piece, score, highscore, &change);
 		
 		hidScanInput();
 		
-		//quit
+		//save and quit
 		if (hidKeysDown() & KEY_START) {
+			saveToFile(inventory, score, highscore);
 			break;
 		}
-		//place the selected piece on the selected tile (starting from top left corner)
+		//place the selected piece on the selected tile (starting from top left block)
 		else if (hidKeysDown() & KEY_A) {
 			u8 tempscore = placePiece(selected_tile, piecesType[inventory[selected_piece]]);
 			if (tempscore != 0) {
@@ -43,6 +45,8 @@ int main()
 				score += checkGrid();
 				inventory[selected_piece] = 0;
 				change = 1;
+				if (score > highscore)
+					highscore = score;
 			}
 		}
 		//navigate through the grid

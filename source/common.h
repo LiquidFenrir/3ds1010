@@ -9,7 +9,9 @@
 #include <math.h>
 
 #define GETBIT(var, n) ((var >> n) & 1)
+
 #define PIECES_AMOUNT 21
+#define WORKING_DIR "/3ds/3ds1010/"
 
 typedef struct {
 	u8 height;
