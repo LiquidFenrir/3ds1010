@@ -22,7 +22,9 @@ DEPSDIR  := $(CURDIR)/$(BUILD)
 
 CFILES   := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
-OFILES   := $(addprefix $(BUILD)/, $(CPPFILES:.cpp=.o) $(CFILES:.c=.o))
+PICAFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.v.pica)))
+
+OFILES   := $(addprefix $(BUILD)/, $(PICAFILES:.v.pica=.shbin.o) $(CPPFILES:.cpp=.o) $(CFILES:.c=.o))
 
 LD       := $(CC)
 
@@ -36,7 +38,7 @@ LIBPATHS := $(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
 
 APP_ICON := $(CURDIR)/$(ICON)
 
-_3DSXFLAGS += --smdh=$(CURDIR)/$(TARGET).smdh
+_3DSXFLAGS += --smdh=$(CURDIR)/$(TARGET).smdh --romfs=$(CURDIR)/$(ROMFS)
 
 # Compiler flags
 
@@ -111,5 +113,25 @@ $(BUILD)/%.o: %.cpp
 $(BUILD)/%.o: %.c
 	@echo $(notdir $<)
 	$(CC) -MMD -MP -MF $(DEPSDIR)/$*.d $(CFLAGS) -c $< -o $@ $(ERROR_FILTER)
+	
+#---------------------------------------------------------------------------------
+# rules for assembling GPU shaders
+#---------------------------------------------------------------------------------
+define shader-as
+	$(eval CURBIN := $(patsubst %.shbin.o,%.shbin,$(notdir $@)))
+	picasso -o $(BUILD)/$(CURBIN) $1
+	bin2s $(BUILD)/$(CURBIN) | $(AS) -o $@
+	echo "extern const u8" `(echo $(CURBIN) | sed -e 's/^\([0-9]\)/_\1/' | tr . _)`"_end[];" > `(echo $(BUILD)/$(CURBIN) | tr . _)`.h
+	echo "extern const u8" `(echo $(CURBIN) | sed -e 's/^\([0-9]\)/_\1/' | tr . _)`"[];" >> `(echo $(BUILD)/$(CURBIN) | tr . _)`.h
+	echo "extern const u32" `(echo $(CURBIN) | sed -e 's/^\([0-9]\)/_\1/' | tr . _)`_size";" >> `(echo $(BUILD)/$(CURBIN) | tr . _)`.h
+endef
+
+$(BUILD)/%.shbin.o : %.v.pica %.g.pica
+	@echo $(notdir $^)
+	@$(call shader-as,$^)
+
+$(BUILD)/%.shbin.o : %.v.pica
+	@echo $(notdir  $<)
+	@$(call shader-as, $<)
 
 -include $(DEPENDS)
