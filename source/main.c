@@ -1,4 +1,4 @@
-#include "draw.h"
+#include "interface.h"
 #include "pieces.h"
 #include "grid.h"
 #include "save.h"
@@ -9,32 +9,36 @@ u8 grid[10][10] = {0};
 int main()
 {
 	gfxInitDefault();
-	setupScreens();
-	
-	generatePiecesTypes();
+	romfsInit();
+	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
 	
 	u8 inventory[3] = {0};
 	u8 selected_tile = 0;
 	u8 selected_piece = 0;
 	u32 score = 0;
 	u32 highscore = 0;
-	u8 change = 0;
 	currentTheme.name = DEFAULT_THEME;
 	
-	getPieces(inventory);
+	setupScreens();
+	generatePiecesTypes();
+	
 	readSave(inventory, &score, &highscore);
 	loadTheme();
-		
+	setupTextures(currentTheme.sprite, currentTheme.spritesize, currentTheme.bgColor);
+	
 	while (aptMainLoop())
 	{
 		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0) //refill inventory when all pieces are placed
 			getPieces(inventory);
 		
-		drawInterface(selected_tile, inventory, selected_piece, score, highscore, &change);
-		
 		hidScanInput();
 		
 		//save and quit
+		startDraw();
+		drawInterface(selected_tile, inventory, selected_piece, score, highscore);
+		
+		endDraw();
+		
 		if (hidKeysDown() & KEY_START) {
 			saveToFile(inventory, score, highscore);
 			break;
@@ -46,7 +50,6 @@ int main()
 				score += tempscore;
 				score += checkGrid();
 				inventory[selected_piece] = 0;
-				change = 1;
 				if (score > highscore)
 					highscore = score;
 			}
@@ -92,15 +95,14 @@ int main()
 			selected_piece = 0;
 			selected_tile = 0;
 			getPieces(inventory);
-			change = 1;
 		}
 		
-		gfxFlushBuffers();
-		gfxSwapBuffers();
-		
-		gspWaitForVBlank();
 	}
 	
+	sceneExit();
+	
+	C3D_Fini();
+	romfsExit();
 	gfxExit();
 	return 0;
 }
