@@ -1,6 +1,7 @@
 #pragma once
 
 #include <3ds.h>
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -12,6 +13,7 @@
 
 #define PIECES_AMOUNT 21
 #define WORKING_DIR "/3ds/3ds1010/"
+#define DEFAULT_THEME "Default"
 
 typedef struct {
 	u8 height;
