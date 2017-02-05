@@ -15,8 +15,11 @@ int main()
 	u8 inventory[3] = {0};
 	u8 selected_tile = 0;
 	u8 selected_piece = 0;
+	u8 hoveringPiece = 0;
 	u32 score = 0;
 	u32 highscore = 0;
+	u8 place = 0;
+	u8 hover = 0;
 	currentTheme.name = DEFAULT_THEME;
 	
 	setupScreens();
@@ -28,24 +31,56 @@ int main()
 	
 	while (aptMainLoop())
 	{
-		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0) //refill inventory when all pieces are placed
+		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0 && hoveringPiece == 0) //refill inventory when all pieces are placed
 			getPieces(inventory);
 		
+		touchPosition touch;
+		hidTouchRead(&touch);
 		hidScanInput();
 		
-		//save and quit
 		startDraw();
 		drawInterface(selected_tile, inventory, selected_piece, score, highscore);
 		
+		if (hover == 1) {
+			drawHover(piecesType[hoveringPiece], touch.px-8, touch.py-8);
+			if (hidKeysUp() & KEY_TOUCH) {
+				inventory[selected_piece] = hoveringPiece;
+				hoveringPiece = 0;
+				place = 1;
+				hover = 0;
+			}
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				if (touch.px >= 240 && touch.px <= 290) {
+					if (touch.py >= (20 + i*50) && touch.py <= (70 + i*50)) {
+						selected_piece = i;
+						hoveringPiece = inventory[i];
+						inventory[i] = 0;
+						hover = 1;
+					}
+				}
+			}
+		}
+		
 		endDraw();
 		
+		if (touch.px >= 20 && touch.px <= 220 && touch.py >= 20 && touch.py <= 220) {
+			u8 x = (touch.px - 20)/20;
+			u8 y = (touch.py - 20)/20;
+			selected_tile = y*10 +x;
+		}
+		
+		//save and quit
 		if (hidKeysDown() & KEY_START) {
 			saveToFile(inventory, score, highscore);
 			break;
 		}
 		//place the selected piece on the selected tile (starting from top left block)
 		else if (hidKeysDown() & KEY_A) {
+		else if (hidKeysDown() & KEY_A || place != 0) {
 			u8 tempscore = placePiece(selected_tile, piecesType[inventory[selected_piece]]);
+			place = 0;
 			if (tempscore != 0) {
 				score += tempscore;
 				score += checkGrid();
