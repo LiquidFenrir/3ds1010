@@ -34,6 +34,16 @@ void readSave(u8 inventory[3], u32 * score, u32 * highscore)
 	fread(&savedHighScore, 4, 1, fptr);
 	*highscore = savedHighScore;
 	
+	u8 themeNameLength = 0;
+	fread(&themeNameLength, 1, 1, fptr);
+	
+	u8 * nameBuf = malloc(themeNameLength+1); // +1 for the ending nullbyte
+	memset(nameBuf, 0, themeNameLength+1);
+	
+	fread(nameBuf, 1, themeNameLength, fptr);
+	currentTheme.name = strdup((char *)nameBuf);
+	
+	free(nameBuf);
 	fclose(fptr);
 }
 
@@ -62,6 +72,10 @@ void saveToFile(u8 inventory[3], u32 score, u32 highscore)
 	
 	fwrite(&score, 4, 1, fptr);
 	fwrite(&highscore, 4, 1, fptr);
+	
+	u8 len = strlen(currentTheme.name);
+	fwrite(&len, 1, 1, fptr);
+	fwrite(currentTheme.name, len, 1, fptr);
 	
 	fclose(fptr);
 }

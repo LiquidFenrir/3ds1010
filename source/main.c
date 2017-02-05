@@ -19,9 +19,11 @@ int main()
 	u32 score = 0;
 	u32 highscore = 0;
 	u8 change = 0;
+	currentTheme.name = DEFAULT_THEME;
 	
 	getPieces(inventory);
 	readSave(inventory, &score, &highscore);
+	loadTheme();
 		
 	while (aptMainLoop())
 	{
