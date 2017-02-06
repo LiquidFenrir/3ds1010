@@ -5,6 +5,63 @@
 
 piece piecesType[PIECES_AMOUNT] = {0}; //piece 0 is reserved for blank
 u8 grid[10][10] = {0};
+static u8 quit = 0;
+
+void themesMenu()
+{
+	Theme themes[256] = {0};
+	Theme defaultTheme;
+	defaultTheme.name = DEFAULT_THEME;
+	themes[0] = defaultTheme;
+	u8 themesCount = 0;
+	u8 selected_theme = 0;
+	if (strcmp(currentTheme.name, themes[selected_theme].name) == 0)
+		selected_theme = 1;
+	
+	listThemes(themes, &themesCount);
+	drawThemesMenu(themes, themesCount, selected_theme);
+	selected_theme = 0;
+	
+	while(aptMainLoop()) {
+		drawThemesMenu(themes, themesCount, selected_theme);
+		hidScanInput();
+		
+		if (hidKeysDown() & KEY_START) {
+			quit = 1;
+			break;
+		}
+		else if(hidKeysDown() & KEY_A) {
+			if (strcmp(currentTheme.name, themes[selected_theme].name) != 0) {
+				sceneExit();
+				currentTheme = themes[selected_theme];
+				loadTheme();
+				setupTextures(currentTheme.sprite, currentTheme.spritesize, currentTheme.bgColor);
+			}
+			break;
+		}
+		else if(hidKeysDown() & KEY_B) {
+			break;
+		}
+		else if(hidKeysDown() & KEY_UP) {
+			if (selected_theme != 0)
+				selected_theme--;
+		}
+		else if(hidKeysDown() & KEY_DOWN) {
+			if (selected_theme != themesCount)
+				selected_theme++;
+		}
+		else if(hidKeysDown() & KEY_LEFT) {
+			selected_theme = 0;
+		}
+		else if(hidKeysDown() & KEY_RIGHT) {
+			selected_theme = themesCount;
+		}
+		
+		gfxFlushBuffers();
+		gfxSwapBuffers();
+		gspWaitForVBlank();
+	}
+}
 
 int main()
 {
@@ -72,7 +129,7 @@ int main()
 		}
 		
 		/* save and quit */
-		if (hidKeysDown() & KEY_START) {
+		if (hidKeysDown() & KEY_START || quit != 0) {
 			saveToFile(inventory, score, highscore);
 			break;
 		}
@@ -124,6 +181,13 @@ int main()
 			selected_piece = 0;
 			selected_tile = 0;
 			getPieces(inventory);
+		}
+		/* open the themes menu */
+		else if (hidKeysDown() & KEY_X) {
+			themesMenu();
+			consoleClear();
+			printf("\x1b[0;0Hhighscore: %lu", highscore);
+			printf("\x1b[1;4Hscore: %lu", score);
 		}
 		
 	}

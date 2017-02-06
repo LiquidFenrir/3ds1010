@@ -1,6 +1,5 @@
 #include <citro3d.h>
 #include "common.h"
-#include "themes.h"
 
 enum sprites {
 	SPRITE_BLANK = 0,

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+#include "themes.h"
 
 #define GETBIT(var, n) ((var >> n) & 1)
 

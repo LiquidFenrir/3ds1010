@@ -11,5 +11,6 @@ typedef struct {
 
 extern Theme currentTheme;
 
+void listThemes(Theme themes[256], u8 * themesCount);
 void loadTheme();
 void freeTheme();

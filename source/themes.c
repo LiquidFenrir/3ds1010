@@ -1,6 +1,27 @@
+#include <dirent.h>
 #include "themes.h"
 
 Theme currentTheme;
+
+void listThemes(Theme themes[256], u8 * themesCount)
+{
+	DIR *dir;
+	struct dirent *ent;
+	
+	u8 count = *themesCount;
+	char themesdir[256];
+	sprintf(themesdir, "%s%s/", WORKING_DIR, "Themes");
+	
+	if ((dir = opendir(themesdir)) != NULL) {
+		while ((ent = readdir(dir)) != NULL) {
+			count++;
+			themes[count].name = strdup(ent->d_name);
+		}
+  closedir (dir);
+	}
+	
+	*themesCount = count;
+}
 
 void loadTheme()
 {
