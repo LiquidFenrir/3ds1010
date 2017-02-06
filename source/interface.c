@@ -30,14 +30,14 @@ void drawPiece(piece currentPiece, u16 xPos, u16 yPos)
 	}
 }
 
-void drawInventory(u8 inventory[3], u8 selected_piece)
+void drawInventory(u8 inventory[3])
 {
 	for (int i = 0; i < 3; i++) {
 		drawPiece(piecesType[inventory[i]], 240, 20+i*60);
 	}
 }
 
-void drawGrid(u8 selected_tile)
+void drawGrid()
 {
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
@@ -62,17 +62,19 @@ void drawHover(piece currentPiece, u16 xPos, u16 yPos)
 	}
 }
 
-void drawInterface(u8 selected_tile, u8 inventory[3], u8 selected_piece, u32 score, u32 highscore)
+void drawInterface(u8 inventory[3], u8 lost, u32 score, u32 highscore)
 {
 	if (oldScore != score) {
 		consoleClear();
 		printf("\x1b[0;0Hhighscore: %lu", highscore);
 		printf("\x1b[1;4Hscore: %lu", score);
+		if (lost != 0)
+			printf("\x1b[3;0H\x1b[40;31mYou lost. Press Y to restart.\x1b[0m");
 		oldScore = score;
 	}
 	
-	drawGrid(selected_tile);
-	drawInventory(inventory, selected_piece);
+	drawGrid();
+	drawInventory(inventory);
 }
 
 void drawThemesMenu(Theme * themes, u8 themesCount, u8 selected_theme)

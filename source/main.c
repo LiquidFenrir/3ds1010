@@ -82,21 +82,22 @@ int main()
 	setupScreens();
 	generatePiecesTypes();
 	
+	getPieces(inventory);
 	readSave(inventory, &score, &highscore);
+	u8 lost = checkInventory(inventory)^1;
+	
 	loadTheme();
 	setupTextures(currentTheme.sprite, currentTheme.spritesize, currentTheme.bgColor);
 	
 	while (aptMainLoop())
 	{
-		if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0 && hoveringPiece == 0) //refill inventory when all pieces are placed
-			getPieces(inventory);
 		
 		touchPosition touch;
 		hidTouchRead(&touch);
 		hidScanInput();
 		
 		startDraw();
-		drawInterface(selected_tile, inventory, selected_piece, score, highscore);
+		drawInterface(inventory, lost, score, highscore);
 		
 		if (hover == 1) {
 			drawHover(piecesType[hoveringPiece], touch.px-8, touch.py-8);
@@ -141,8 +142,14 @@ int main()
 				score += tempscore;
 				score += checkGrid();
 				inventory[selected_piece] = 0;
+				
 				if (score > highscore)
 					highscore = score;
+				
+				if (inventory[0] == 0 && inventory[1] == 0 && inventory[2] == 0 && hoveringPiece == 0) //refill inventory when all pieces are placed
+					getPieces(inventory);
+					
+				lost = checkInventory(inventory)^1;
 			}
 		}
 		/*
@@ -178,6 +185,7 @@ int main()
 		else if (hidKeysDown() & KEY_Y) {
 			memset(&grid, 0, 100);
 			score = 0;
+			lost = 0;
 			selected_piece = 0;
 			selected_tile = 0;
 			getPieces(inventory);

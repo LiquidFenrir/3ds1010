@@ -13,8 +13,8 @@ Use the D-PAD to move your cursor and select where to place the selected piece.
 Use the L/R shoulder buttons to select which piece you want to place.  
 Press A to place the selected piece.
 
-Press Y to reset (if you're stuck, or want to start over), or START to quit.  
-It doesnt currently tell you when you lost (are unable to place any of your pieces), or where your cursors are, so keep a sharp eye. If in doubt, press LEFT, UP, and L a couple times to go back to the top left corner and first piece
+Press Y to reset (if you lost, or want to start over), or START to quit.
+It doesnt tell you where your cursors are, so I recommend using the touchscreen. If in doubt, press LEFT, UP, and L a couple times to go back to the top left corner and first piece
 
 # Save format
 There have been 2 save file format for now.

@@ -30,7 +30,7 @@ u8 checkGrid()
 	return completeAmount * 10; //each line/column removed is worth 10 points
 }
 
-u8 placePiece(u8 selected_tile, piece selectedPiece)
+static u8 placePieceOrNot(u8 selected_tile, piece selectedPiece, u8 place)
 {
 	if (selectedPiece.blocks == 0) //if the passed piece is blank, skip everything
 		return 0;
@@ -57,7 +57,34 @@ u8 placePiece(u8 selected_tile, piece selectedPiece)
 		}
 	}
 	
-	memcpy(&grid, &newGrid, 100);
+	if (place != 0)
+		memcpy(&grid, &newGrid, 100);
 	
 	return __builtin_popcount(selectedPiece.blocks); //each piece is worth the number of blocks it contains
+}
+
+u8 placePiece(u8 selected_tile, piece selectedPiece)
+{
+	return placePieceOrNot(selected_tile, selectedPiece, 1);
+}
+
+static u8 checkPiece(piece piece)
+{
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0;j < 10; j++) {
+			if (placePieceOrNot(j+ i*10, piece, 0) != 0) {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+u8 checkInventory(u8 inventory[3])
+{
+	u8 possible = 0;
+	for (int i = 0; i < 3; i++) {
+		possible |= checkPiece(piecesType[inventory[i]]);
+	}
+	return possible;
 }
