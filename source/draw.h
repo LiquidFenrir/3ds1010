@@ -1,5 +1,5 @@
-#include <citro3d.h>
 #include "common.h"
+#include "text.h"
 
 enum sprites {
 	SPRITE_BLANK,
@@ -17,6 +17,7 @@ enum sprites {
 
 void drawSpriteWithZ(int x, int y, int width, int height, int image, float z);
 void drawSprite( int x, int y, int width, int height, int image);
+void setupRenderTargets(u32 clear_color);
 void setupTextures(u8 * imgData, u32 imgSize, u32 clear_color);
 void sceneExit(void);
 void startDraw(void);

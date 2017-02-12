@@ -29,14 +29,14 @@ struct { float left, right, top, bottom; } images[] = {
 	{0.0f, 1.0f, 0.0f, 0.5f} //banner
 };
 
-static C3D_RenderTarget* target;
-
 static DVLB_s* vshader_dvlb;
 static shaderProgram_s program;
-static int uLoc_projection;
-static C3D_Mtx projection;
 
 static C3D_Tex spritesheet_tex;
+
+C3D_Mtx projections[2];
+C3D_RenderTarget* targets[2];
+int uLoc_projection;
 
 void drawSpriteWithZ(int x, int y, int width, int height, int image, float z)
 {
@@ -66,13 +66,18 @@ void drawSprite(int x, int y, int width, int height, int image)
 	drawSpriteWithZ(x, y, width, height, image, 0.1f);
 }
 
+void setupRenderTargets(u32 clear_color)
+{
+	for (int i = 0; i <= 1; i++) {
+		targets[i] = C3D_RenderTargetCreate(240, 400 - 80*i, GPU_RB_RGBA8, GPU_RB_DEPTH24_STENCIL8);
+		C3D_RenderTargetSetClear(targets[i], C3D_CLEAR_ALL, clear_color, 0);
+		C3D_RenderTargetSetOutput(targets[i], i, GFX_LEFT, DISPLAY_TRANSFER_FLAGS);
+	}
+}
+
 void setupTextures(u8 * imgData, u32 imgSize, u32 clear_color)
 {
-
-	// Initialize the render target
-	target = C3D_RenderTargetCreate(240, 320, GPU_RB_RGBA8, GPU_RB_DEPTH24_STENCIL8);
-	C3D_RenderTargetSetClear(target, C3D_CLEAR_ALL, clear_color, 0);
-	C3D_RenderTargetSetOutput(target, GFX_BOTTOM, GFX_LEFT, DISPLAY_TRANSFER_FLAGS);
+	setupRenderTargets(clear_color);
 	
 	// Load the vertex shader, create a shader program and bind it
 	vshader_dvlb = DVLB_ParseFile((u32*)vshader_shbin, vshader_shbin_size);
@@ -92,7 +97,8 @@ void setupTextures(u8 * imgData, u32 imgSize, u32 clear_color)
 
 	// Compute the projection matrix
 	// Note: we're setting top to 240 here so origin is at top left.
-	Mtx_OrthoTilt(&projection, 0.0, 320.0, 240.0, 0.0, 0.0, 1.0, true);
+	Mtx_OrthoTilt(&projections[GFX_TOP], 0.0, 400.0, 240.0, 0.0, 0.0, 1.0, true);
+	Mtx_OrthoTilt(&projections[GFX_BOTTOM], 0.0, 320.0, 240.0, 0.0, 0.0, 1.0, true);
 
 	// Configure buffers
 	C3D_BufInfo* bufInfo = C3D_GetBufInfo();
@@ -147,6 +153,8 @@ void setupTextures(u8 * imgData, u32 imgSize, u32 clear_color)
 	
 	// Configure depth test to overwrite pixels with the same depth (needed to draw overlapping sprites)
 	C3D_DepthTest(true, GPU_GEQUAL, GPU_WRITE_ALL);
+	
+	textSceneInit();
 }
 
 void sceneExit(void)
@@ -159,9 +167,13 @@ void sceneExit(void)
 
 void startDraw(void)
 {
-	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-	C3D_FrameDrawOn(target);
-	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projection);
+	C3D_TexBind(0, &spritesheet_tex);
+	
+	C3D_TexEnv* env = C3D_GetTexEnv(0);
+	C3D_TexEnvSrc(env, C3D_Both, GPU_TEXTURE0, GPU_PRIMARY_COLOR, GPU_PRIMARY_COLOR);
+	C3D_TexEnvOp(env, C3D_Both, GPU_TEVOP_RGB_SRC_COLOR, GPU_TEVOP_RGB_SRC_COLOR, GPU_TEVOP_RGB_SRC_COLOR);
+	C3D_TexEnvFunc(env, C3D_Both, GPU_REPLACE);
+	C3D_TexEnvFunc(env, C3D_Alpha, GPU_MODULATE);
 }
 
 void endDraw(void)

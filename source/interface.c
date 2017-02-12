@@ -1,18 +1,7 @@
 #include "interface.h"
 
-static PrintConsole scoreWindow;
-static u32 oldScore = -1;
-static u8 oldSelectedTheme = -1;
-
-#define MENU_WIDTH 40
-#define MAX_ENTRIES_PER_SCREEN 18
+#define MAX_ENTRIES_PER_SCREEN 9
 u8 scroll = 0;
-
-void setupScreens()
-{
-	consoleInit(GFX_TOP, &scoreWindow);
-	consoleSelect(&scoreWindow);
-}
 
 void drawPiece(piece currentPiece, u16 xPos, u16 yPos)
 {
@@ -64,14 +53,21 @@ void drawHover(piece currentPiece, u16 xPos, u16 yPos)
 
 void drawInterface(u8 inventory[3], u8 lost, u32 score, u32 highscore)
 {
-	if (oldScore != score) {
-		consoleClear();
-		printf("\x1b[0;0Hhighscore: %lu", highscore);
-		printf("\x1b[1;4Hscore: %lu", score);
-		if (lost != 0)
-			printf("\x1b[3;0H\x1b[40;31mYou lost. Press Y to restart.\x1b[0m");
-		oldScore = score;
-	}
+	
+	textStartDraw();
+	char buf[0x20] = {0};
+	sprintf(buf, "highscore: %lu", highscore);
+	drawText(14, 12, buf, currentTheme.txtColor);
+	sprintf(buf, "score: %lu", score);
+	drawText(19, 14, buf, currentTheme.txtColor);
+	if (lost != 0)
+		drawText(9, 17, "You lost. Press Y to restart.", currentTheme.selTxtColor);
+	
+	startDraw();
+	drawSprite(64, 8, 256, 128, SPRITE_BANNER);
+	
+	C3D_FrameDrawOn(targets[GFX_BOTTOM]);
+	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projections[GFX_BOTTOM]);
 	
 	drawGrid();
 	drawInventory(inventory);
@@ -79,50 +75,37 @@ void drawInterface(u8 inventory[3], u8 lost, u32 score, u32 highscore)
 
 void drawThemesMenu(Theme * themes, u8 themesCount, u8 selected_theme)
 {
-	if (oldSelectedTheme != selected_theme) {
-		consoleClear();		
-		oldSelectedTheme = selected_theme;
+	textStartDraw();
 		
-		if (selected_theme == 0) {
+	if (selected_theme == 0) {
+		scroll = 0;
+	}
+	else if (selected_theme == themesCount) {
+		scroll = themesCount - MAX_ENTRIES_PER_SCREEN + 1;
+		if (scroll >= themesCount)
 			scroll = 0;
-		}
-		else if(selected_theme == themesCount) {
-			scroll = themesCount - MAX_ENTRIES_PER_SCREEN;
-			if (scroll >= themesCount)
-				scroll = 0;
-		}
-		else if (selected_theme >= (MAX_ENTRIES_PER_SCREEN + scroll)) {
-			scroll++;
-		}
-		else if ((selected_theme - scroll) < 0) {
-			scroll--;
-		}
+	}
+	else if (selected_theme >= (MAX_ENTRIES_PER_SCREEN + scroll)) {
+		scroll++;
+	}
+	else if ((selected_theme - scroll) < 0) {
+		scroll--;
+	}
+
+	if (scroll != 0)
+		drawText(2, 2, "", currentTheme.selTxtColor);
+	
+	if ((themesCount > MAX_ENTRIES_PER_SCREEN) && (scroll != themesCount - MAX_ENTRIES_PER_SCREEN + 1))
+		drawText(2, 18, "", currentTheme.selTxtColor);
+	
+	for(int i = scroll; i < (MAX_ENTRIES_PER_SCREEN + scroll); i++) {
 		
-		for (int i = 0; i <= MENU_WIDTH; i++) {
-			printf("\x1b[0;40;37m\x1b[5;%uH=", (4+i));
-			printf("\x1b[0;40;37m\x1b[24;%uH=", (4+i));
-		}
+		char * current_name = (char *)themes[i].name;
 		
-		for(int i = scroll; i < (MAX_ENTRIES_PER_SCREEN + scroll); i++) {
-			
-			char * current_name = (char *)themes[i].name;
-			
-			if (current_name != NULL) {
-				char format[64];
-				sprintf(format, "\x1b[%u;4H", (i+6-scroll));
-				
-				if (i == selected_theme ) {
-					strcat(format, "\x1b[47;30m"); //selected entry has gray background
-				}
-				
-				strcat(format, "%s");
-				for (u8 i = 0; i < (MENU_WIDTH - strlen(current_name) + 1); i++) {
-					strcat(format, " ");
-				}
-				strcat(format, "\x1b[0m"); //remove all color
-				
-				printf(format, current_name);
-			}
+		if (current_name != NULL) {
+			drawText(5, 2*(i-scroll)+2, current_name, (i == selected_theme) ? currentTheme.selTxtColor : currentTheme.txtColor);
 		}
 	}
+	
+	endDraw();
 }

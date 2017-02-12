@@ -15,12 +15,8 @@ void themesMenu()
 	themes[0] = defaultTheme;
 	u8 themesCount = 0;
 	u8 selected_theme = 0;
-	if (strcmp(currentTheme.name, themes[selected_theme].name) == 0)
-		selected_theme = 1;
 	
 	listThemes(themes, &themesCount);
-	drawThemesMenu(themes, themesCount, selected_theme);
-	selected_theme = 0;
 	
 	while(aptMainLoop()) {
 		drawThemesMenu(themes, themesCount, selected_theme);
@@ -56,10 +52,6 @@ void themesMenu()
 		else if(hidKeysDown() & KEY_RIGHT) {
 			selected_theme = themesCount;
 		}
-		
-		gfxFlushBuffers();
-		gfxSwapBuffers();
-		gspWaitForVBlank();
 	}
 }
 
@@ -79,7 +71,6 @@ int main()
 	u8 hover = 0;
 	currentTheme.name = DEFAULT_THEME;
 	
-	setupScreens();
 	generatePiecesTypes();
 	
 	getPieces(inventory);
@@ -96,7 +87,6 @@ int main()
 		hidTouchRead(&touch);
 		hidScanInput();
 		
-		startDraw();
 		drawInterface(inventory, lost, score, highscore);
 		
 		if (hover == 1) {
