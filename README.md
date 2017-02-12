@@ -4,6 +4,8 @@ It's like Tetris but with infinite time, you lose when you can no longer place a
   
 Displays a 10 by 10 (hence the name) grid of blocks with 3 pieces you can place. When you complete a line or a column, it disappears, leaving space for new pieces and giving you a lot of points. You can't really win this game, the goal is just to get more points than the next guy
 
+![Screenshot](http://i.imgur.com/NKWK5IV.png)
+
 # Instructions
 Use the touchscreen or press and hold L/R/Nothing + A to select a piece, then drag it to the place you want on the grid using the stylus or the D-PAD/Analog stick. If you release it outside of the grid, or in a place where it doesn't fit, it will go back to your inventory
 
