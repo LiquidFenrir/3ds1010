@@ -15,11 +15,18 @@
 	GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGBA8) | \
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
-struct { float left, right, top, bottom; } images[4] = {
-	{0.0f, 0.5f, 0.0f, 0.5f}, //blank
-	{0.5f, 1.0f, 0.0f, 0.5f}, //full
-	{0.0f, 0.5f, 0.5f, 1.0f}, //options
-	{0.5f, 0.75f, 0.5f, 0.75f} //small
+struct { float left, right, top, bottom; } images[] = {
+	{0.0f, 0.25f, 0.5f, 0.75f}, //blank
+	{0.25f, 0.5f, 0.5f, 0.75f}, //full 1
+	{0.5f, 0.75f, 0.5f, 0.75f}, //full 2
+	{0.75f, 1.0f, 0.5f, 0.75f}, //full 3
+	{0.0f, 0.25f, 0.75f,  1.0f}, //themes
+	{0.25f, 0.5f, 0.75f,  1.0f}, //reset
+	{0.5f, 0.75f, 0.75f,  1.0f}, //exit
+	{0.75f, 0.875f, 0.75f, 0.875f}, //small 1
+	{0.875f, 1.0f, 0.75f, 0.875f}, //small 2
+	{0.75f, 0.875f, 0.875f,1.0f}, //small 3
+	{0.0f, 1.0f, 0.0f, 0.5f} //banner
 };
 
 static C3D_RenderTarget* target;

@@ -6,6 +6,8 @@ typedef struct {
 	u8 * sprite;
 	u32 spritesize;
 	u32 bgColor;
+	u32 txtColor;
+	u32 selTxtColor;
 	char * name;
 } Theme;
 

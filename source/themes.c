@@ -49,11 +49,25 @@ void loadTheme()
 	fclose(fptr);
 	
 	char filepath[256];
-	sprintf(filepath, "%s%s", themedir, "bgcolor.bin");
+	sprintf(filepath, "%s%s", themedir, "colors.txt");
 	FILE * colorfptr = fopen(filepath, "rb");
-	fread(&currentTheme.bgColor, 3, 1, colorfptr);
-	currentTheme.bgColor =  __builtin_bswap32(currentTheme.bgColor) | 0xFF; //0xFF alpha
+	u32 * colors[3] = {&currentTheme.bgColor, &currentTheme.txtColor, &currentTheme.selTxtColor};
+	u8 * tmpbuf = malloc(1);
+	
+	for (int i = 0; i < 3; i++) {
+		char tempcolor[6] = {0};
+		fread(tempcolor, 6, 1, colorfptr);
+		
+		if (i != 2) { //skip newline characters for the first 2 lines
+			fread(tmpbuf, 1, 1, colorfptr);
+			if (*tmpbuf == 0x0D) //if the file has windows file endings, have to remove another bytes
+				fread(tmpbuf, 1, 1, colorfptr);
+		}
+		
+		*colors[i] =  (strtoul(tempcolor, NULL, 16) << 8) | 0xFF; //0xFF alpha
+	}
 	fclose(colorfptr);
+	free(tmpbuf);
 }
 
 void freeTheme()

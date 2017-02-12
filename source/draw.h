@@ -2,10 +2,17 @@
 #include "common.h"
 
 enum sprites {
-	SPRITE_BLANK = 0,
-	SPRITE_FULL = 1,
-	SPRITE_OPTIONS = 2,
-	SPRITE_SMALL = 3
+	SPRITE_BLANK,
+	SPRITE_FULL,
+	SPRITE_FULL_BAR,
+	SPRITE_FULL_CORNER,
+	SPRITE_THEMES,
+	SPRITE_RESET,
+	SPRITE_EXIT,
+	SPRITE_SMALL,
+	SPRITE_SMALL_BAR,
+	SPRITE_SMALL_CORNER,
+	SPRITE_BANNER
 };
 
 void drawSpriteWithZ(int x, int y, int width, int height, int image, float z);
