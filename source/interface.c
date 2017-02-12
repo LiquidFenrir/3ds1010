@@ -12,7 +12,7 @@ void drawPiece(piece currentPiece, u16 xPos, u16 yPos)
 			if (curval == 1) {
 				u16 x = xPos + j*10;
 				u16 y = yPos + i*10;
-				drawSprite( x, y, 16, 16, SPRITE_SMALL);
+				drawSprite( x, y, 16, 16, currentPiece.type + SPRITE_SMALL - 1);
 			}
 			curbit++;
 		}
@@ -22,7 +22,7 @@ void drawPiece(piece currentPiece, u16 xPos, u16 yPos)
 void drawInventory(u8 inventory[3])
 {
 	for (int i = 0; i < 3; i++) {
-		drawPiece(piecesType[inventory[i]], 240, 20+i*60);
+		drawPiece(piecesType[inventory[i]], 240, 40+i*60);
 	}
 }
 
@@ -44,7 +44,7 @@ void drawHover(piece currentPiece, u16 xPos, u16 yPos)
 			if (curval == 1) {
 				u16 x = xPos + j*20;
 				u16 y = yPos + i*20;
-				drawSpriteWithZ( x, y, 32, 32, SPRITE_FULL, 0.0f);
+				drawSpriteWithZ( x, y, 32, 32, currentPiece.type, 0.0f);
 			}
 			curbit++;
 		}
@@ -68,6 +68,9 @@ void drawInterface(u8 inventory[3], u8 lost, u32 score, u32 highscore)
 	
 	C3D_FrameDrawOn(targets[GFX_BOTTOM]);
 	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projections[GFX_BOTTOM]);
+	drawSprite(320-28*3, 4, 32, 32, SPRITE_THEMES);
+	drawSprite(320-28*2, 4, 32, 32, SPRITE_RESET);
+	drawSprite(320-28, 4, 32, 32, SPRITE_EXIT);
 	
 	drawGrid();
 	drawInventory(inventory);

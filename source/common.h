@@ -12,6 +12,7 @@
 #include "themes.h"
 
 #define GETBIT(var, n) ((var >> n) & 1)
+#define BETWEEN(var, min, max) (var >= min && var <= max)
 
 #define PIECES_AMOUNT 21
 #define WORKING_DIR "/3ds/3ds1010/"
