@@ -11,12 +11,12 @@ void readSave(u8 inventory[3], u32 * score, u32 * highscore)
 		return;
 	}
 	
-	u16 line = 0; //each line is 10 number = 10 bytes, so can't use a u8 (only 8 bits)
+	u32 line = 0; //each line is 10 * 2bits = 20 bits, so need a u32
 	
 	for (int i = 0; i < 10; i++) {
-		fread(&line, 2, 1, fptr);
+		fread(&line, 4, 1, fptr);
 		for (int j = 0; j < 10; j++) {
-			grid[i][j] = (u8 )GETBIT(line, j);
+			grid[i][j] = (u8 )(GETBIT(line, (j*2 +1)) << 1 | GETBIT(line, (j*2)));
 		}
 	}
 	
@@ -59,11 +59,11 @@ void saveToFile(u8 inventory[3], u32 score, u32 highscore)
 	}
 	
 	for (int i = 0; i < 10; i++) {
-		u16 line = 0;
+		u32 line = 0;
 		for (int j = 0; j < 10; j++) {
-			line |= grid[i][j] << j;
+			line |= grid[i][j] << (j*2);
 		}
-		fwrite(&line, 2, 1, fptr);
+		fwrite(&line, 4, 1, fptr);
 	}
 	
 	for (int i = 0; i < 3; i++) {

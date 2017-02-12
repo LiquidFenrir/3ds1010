@@ -9,6 +9,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
+
 #include "themes.h"
 
 #define GETBIT(var, n) ((var >> n) & 1)
@@ -19,6 +20,7 @@
 #define DEFAULT_THEME "Default"
 
 typedef struct {
+	u8 type;
 	u8 height;
 	u8 width;
 	/*

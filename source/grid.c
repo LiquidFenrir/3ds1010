@@ -3,8 +3,8 @@
 u8 checkGrid()
 {
 	u8 completeAmount = 0;
-	u8 completeLines[10] = {[0 ... 9] = 1};
-	u8 completeColumns[10] = {[0 ... 9] = 1};
+	u8 completeLines[10] = {[0 ... 9] = 3};
+	u8 completeColumns[10] = {[0 ... 9] = 3};
 	
 	for (int i = 0; i < 10; i++) { //checking if the line/column is complete
 		for (int j = 0; j < 10; j++) {
@@ -27,10 +27,10 @@ u8 checkGrid()
 		}
 	}
 	
-	return completeAmount * 10; //each line/column removed is worth 10 points
+	return 10 * (completeAmount*(completeAmount + 1))/2; //worth (10 * the triangular number of lines/columns removed) points
 }
 
-static u8 placePieceOrNot(u8 selected_tile, piece selectedPiece, u8 place)
+static u8 testSpot(u8 selected_tile, piece selectedPiece, u8 place)
 {
 	if (selectedPiece.blocks == 0) //if the passed piece is blank, skip everything
 		return 0;
@@ -51,8 +51,8 @@ static u8 placePieceOrNot(u8 selected_tile, piece selectedPiece, u8 place)
 		for (int j = startY; j < endY; j++) {
 			u8 curval = GETBIT(selectedPiece.blocks, curbit);
 			curbit++;
-			newGrid[i][j] |= curval; //some pieces will have blank spaces in them later, don't want to unset blocks
-			if (grid[i][j] & curval) //if both are set at the same time, there's already a block where another block would end up = the piece can't be placed
+			newGrid[i][j] |= curval*selectedPiece.type; //some pieces have blank spaces in them, don't want to unset blocks under the blanks
+			if (grid[i][j] && curval) //if both are set at the same time, there's already a block where another block would end up = the piece can't be placed
 				return 0;
 		}
 	}
@@ -65,14 +65,14 @@ static u8 placePieceOrNot(u8 selected_tile, piece selectedPiece, u8 place)
 
 u8 placePiece(u8 selected_tile, piece selectedPiece)
 {
-	return placePieceOrNot(selected_tile, selectedPiece, 1);
+	return testSpot(selected_tile, selectedPiece, 1);
 }
 
 static u8 checkPiece(piece piece)
 {
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0;j < 10; j++) {
-			if (placePieceOrNot(j+ i*10, piece, 0) != 0) {
+			if (testSpot(j+ i*10, piece, 0) != 0) {
 				return 1;
 			}
 		}
